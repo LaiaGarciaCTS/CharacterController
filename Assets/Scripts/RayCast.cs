@@ -51,14 +51,14 @@ public class RayCast : MonoBehaviour
 
         //TopDownMovement();
 
-        /*Debug.DrawRay(transform.position, transform.forward * 10, color.red);
+        //Debug.DrawRay(transform.position, transform.forward * 10, color.red);
 
-        if(_clickAction.WasPressedThisFrame())
+        /*if(_clickAction.WasPressedThisFrame())
         {
-            ShotRayCast();
+            //ShotRayCast();
         }*/
 
-        Gravity();
+        //Gravity();
 
         if(_clickAction.WasPressedThisFrame())
         {
@@ -100,6 +100,7 @@ public class RayCast : MonoBehaviour
 
     void MoveToClickPoint()
     {
+        _mousePosition = _lookInput.ReadValue<Vector2>(); 
         Ray ray = Camera.main.ScreenPointToRay(_mousePosition);
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, Mathf.Infinity))
