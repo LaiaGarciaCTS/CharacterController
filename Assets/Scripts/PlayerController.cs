@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        _characterController = GetComponent<CharacterController>();
+        //_characterController = GetComponent<CharacterController>();
 
         _moveAction = InputSystem.actions["Move"];
         _jumpAction = InputSystem.actions["Jump"];
@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
     }
 
     //Primer tipo de movimiento
-    void TopDownMovement()
+    /*void TopDownMovement()
     {
         Vector3 moveDirection = new Vector3(_moveInput.x, 0, _moveInput.y);
 
@@ -90,7 +90,9 @@ public class PlayerController : MonoBehaviour
 
             _characterController.Move(moveDirection * _movementSpeed * Time.deltaTime);
         }
-    }
+    }*/
+
+    
 
     void Gravity()
     {

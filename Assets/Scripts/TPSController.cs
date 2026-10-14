@@ -36,6 +36,10 @@ public class TPSController : MonoBehaviour
     private InputAction _lookAction;
     private Vector2 _lookInput;
 
+    //Campo camara disparo:
+    [SerializeField]private GameObject _normalCamera;
+    [SerializeField]private GameObject _aimCamera;
+
 
     void Awake()
     {
@@ -68,6 +72,19 @@ public class TPSController : MonoBehaviour
         }
 
         TPSMovement();
+
+    
+        if(_aimAction.WasPressedThisFrame())
+        {
+            _normalCamera.SetActive(false);
+            _aimCamera.SetActive(true);
+        }
+
+        else if(_aimAction.WasReleasedThisFrame())
+        {
+            _normalCamera.SetActive(true);
+            _aimCamera.SetActive(false);
+        }
     }
 
         void Gravity()
