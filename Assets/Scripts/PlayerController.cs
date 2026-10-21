@@ -35,6 +35,21 @@ public class PlayerController : MonoBehaviour
     //Campo animacion:
     private Animator _animator;
 
+    //Cmpo empujar caja:
+    [SerializeField]private float _pushForce = 5;
+
+    //Campo coger caja:
+    private GameObject _grabbedObject;
+    [SerializeField]private Transform _handsTransform;
+    [SerializeField]private float _handsRadius = 1;
+    //Coger caja interactuando con una tecla
+    private InputAction _interactAction;
+
+    //Campo tirar caja:
+    [SerializeField]private float _throwForce = 20;
+    private InputAction _attackAction;
+
+
 
     void Awake()
     {
@@ -43,6 +58,8 @@ public class PlayerController : MonoBehaviour
         _moveAction = InputSystem.actions["Move"];
         _jumpAction = InputSystem.actions["Jump"];
         _aimAction = InputSystem.actions["Aim"];
+        _interactAction = InputSystem.actions["Interact"];
+        _attackAction = InputSystem.actions["Attack"];
 
         _cameraTransform = Camera.main.transform;
 
@@ -57,6 +74,10 @@ public class PlayerController : MonoBehaviour
         _gravity = Physics.gravity.y;
 
         _cameraTransform = Camera.main.transform;
+
+        //clicar dentro del juego para que el raton no se vea, para salir darle a escape.
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
@@ -83,6 +104,16 @@ public class PlayerController : MonoBehaviour
         }*/
 
         AimMovement();
+
+        if(_interactAction.WasPressedThisFrame())
+        {
+            GrabObject();
+        }
+
+        if(_attackAction.WasPressedThisFrame())
+        {
+            ThrowObject();
+        }
     }
 
     //Primer tipo de movimiento
@@ -126,6 +157,10 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_sensorTransform.position, _sensorRadius);
+
+        //Coger caja: radio para detectar la caja con el radio de las manos. crear empty "hands" y arrastrar al inspector del player donde pone "hands transform"
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(_handsTransform.position, _handsRadius);
     }
 
     void Jump()
@@ -172,6 +207,69 @@ public class PlayerController : MonoBehaviour
             Vector3 moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
 
             _characterController.Move(moveDirection * _movementSpeed * Time.deltaTime);
+        }
+    }
+
+    //mover caja - cambia el rigidbody de la caja
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if(hit.gameObject.CompareTag("Empujable"))
+        {
+            Rigidbody _rbody = hit.gameObject.GetComponent<Rigidbody>();
+
+            Vector3 pushDirection = hit.moveDirection;
+            pushDirection.y = 0;
+
+            //fuerza para mover pelotas (movimiento para que ruede)
+            //_rbody.AddForce(pushDirection * _pushForce, ForceMode.Force);
+
+            _rbody.linearVelocity = pushDirection * _pushForce / _rbody.mass;
+        }
+    }
+
+    //coger caja - 
+    void GrabObject()
+    {
+        if(_grabbedObject == null)
+        {
+            Collider[] objectsToGrab = Physics.OverlapSphere(_handsTransform.position, _handsRadius);
+
+            foreach(Collider item in objectsToGrab)
+            {
+                if(item.CompareTag("Empujable"))
+                {
+                    _grabbedObject = item.gameObject;
+                    _grabbedObject.transform.SetParent(_handsTransform);
+                    _grabbedObject.transform.position = _handsTransform.position;
+                    _grabbedObject.transform.rotation = _handsTransform.rotation;
+                    Rigidbody objectRigidbody = _grabbedObject.GetComponent<Rigidbody>();
+                    objectRigidbody.isKinematic = true;
+                    objectRigidbody.constraints = RigidbodyConstraints.None;
+
+                    return;
+                }
+            }
+        }
+
+        else
+        {
+            Rigidbody objectRigidbody = _grabbedObject.GetComponent<Rigidbody>();
+            objectRigidbody.isKinematic = false;
+            _grabbedObject.transform.SetParent(null);
+            _grabbedObject = null;
+        }
+    }
+
+    //tirar caja
+    void ThrowObject()
+    {
+        if(_grabbedObject != null)
+        {
+            Rigidbody objectRigidbody = _grabbedObject.GetComponent<Rigidbody>();
+            objectRigidbody.isKinematic = false;
+            _grabbedObject.transform.SetParent(null);
+            objectRigidbody.AddForce(_cameraTransform.forward * _throwForce, ForceMode.Impulse);
+            _grabbedObject = null;
         }
     }
 }
