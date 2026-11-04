@@ -227,7 +227,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //recibir daño - desde el script padre (Enemy)
-        if(hit.gameObject.CompareTag("Enemy"))
+        /*if(hit.gameObject.CompareTag("Enemy"))
         {
             Enemy enemyScript = hit.gameObject.GetComponent<Enemy>();
             if(enemyScript != null)
@@ -236,6 +236,18 @@ public class PlayerController : MonoBehaviour
 
                 return;
             }
+        }*/
+
+        /*if(hit.gameObject.CompareTag("Caja"))
+        {
+            Caja cajaScript = hit.gameObject.GetComponent<Caja>();
+            cajaScript.TakeDamage();
+        }*/
+
+        IDamageable damageable = hit.gameObject.GetComponent<IDamageable>();
+        if(damageable != null)
+        {
+            damageable.TakeDamage();
         }
     }
 
