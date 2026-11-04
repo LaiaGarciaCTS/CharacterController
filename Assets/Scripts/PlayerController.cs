@@ -225,9 +225,21 @@ public class PlayerController : MonoBehaviour
 
             _rbody.linearVelocity = pushDirection * _pushForce / _rbody.mass;
         }
+
+        //recibir daño - desde el script padre (Enemy)
+        if(hit.gameObject.CompareTag("Enemy"))
+        {
+            Enemy enemyScript = hit.gameObject.GetComponent<Enemy>();
+            if(enemyScript != null)
+            {
+                Enemy.TakeDamage();
+
+                return;
+            }
+        }
     }
 
-    //coger caja - 
+    //coger caja
     void GrabObject()
     {
         if(_grabbedObject == null)
@@ -272,4 +284,7 @@ public class PlayerController : MonoBehaviour
             _grabbedObject = null;
         }
     }
+
+
+
 }
