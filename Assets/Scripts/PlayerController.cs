@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -35,6 +36,9 @@ public class PlayerController : MonoBehaviour
     //Campo animacion:
     private Animator _animator;
 
+    //Campo zona de muerte:
+    private bool isDead = false;
+
     //Cmpo empujar caja:
     [SerializeField]private float _pushForce = 5;
 
@@ -42,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private GameObject _grabbedObject;
     [SerializeField]private Transform _handsTransform;
     [SerializeField]private float _handsRadius = 1;
+
     //Coger caja interactuando con una tecla
     private InputAction _interactAction;
 
@@ -82,8 +87,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        _moveInput = _moveAction.ReadValue<Vector2>();
 
+        //El personaje sigue cayendo, pero sin control del jugador.
+        if(isDead)
+        {
+            Gravity();   
+            return;
+        }
+
+        _moveInput = _moveAction.ReadValue<Vector2>();
         Gravity();
 
         if(_jumpAction.WasPressedThisFrame() && IsGrounded())
@@ -297,6 +309,33 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if(isDead) return;
 
+        if(other.CompareTag("DeathZone"))
+        {
+            Die();
+        }
+    }
 
+    void Die()
+    {
+        //Congela la pose y apaga el blend tree
+        isDead = true;
+        _animator.enabled = false;
+
+        // Si llevaba una caja, la suelta
+        if(_grabbedObject != null)
+        {
+            GrabObject();
+        }
+
+        Invoke(nameof(Respawn), 2f);
+    }
+
+    void Respawn()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
