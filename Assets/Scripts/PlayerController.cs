@@ -98,12 +98,12 @@ public class PlayerController : MonoBehaviour
             AimMovement();
         }
 
-        /*else
+        else
         {
             TPMovement();
-        }*/
+        }
 
-        AimMovement();
+        //AimMovement();
 
         if(_interactAction.WasPressedThisFrame())
         {
