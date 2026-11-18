@@ -1236,11 +1236,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7109460902c170a4a9a23ed59a46ee44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterControllerRepaso
-  _sensorPosition: {fileID: 0}
+  _sensorPosition: {fileID: 269419398}
   _sensorRadius: 0
-  _groundSensor:
+  _groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   _smoothTime: 0.2
 --- !u!1 &2062858571
 GameObject:
